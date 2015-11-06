@@ -18,23 +18,3 @@ resource "cloudstack_instance" "mysql01" {
     project = "${var.project}"
     user_data = "${file(\"cloudinit_db\")}"
 }
-
-resource "cloudstack_ipaddress" "mysql01" {
-    vpc = "${cloudstack_vpc.my_own_private_cloud.id}"
-    project = "${var.project}"
-}
-
-resource "cloudstack_port_forward" "mysql01" {
-  ipaddress = "${cloudstack_ipaddress.mysql01.id}"
-
-  forward {
-    protocol = "tcp"
-    private_port = 22
-    public_port = 22
-    virtual_machine = "${cloudstack_instance.mysql01.id}"
-  }
-}
-
-output "mysql01" {
-    value = "${cloudstack_ipaddress.mysql01.ipaddress}"
-}

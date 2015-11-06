@@ -17,6 +17,7 @@ resource "cloudstack_instance" "wordpress01" {
     zone = "${var.zone}"
     project = "${var.project}"
     user_data = "${file(\"cloudinit_wordpress\")}"
+    depends_on = [ "cloudstack_instance.mysql01" ]
 }
 
 resource "cloudstack_ipaddress" "wordpress01" {
@@ -29,8 +30,14 @@ resource "cloudstack_port_forward" "wordpress01" {
 
   forward {
     protocol = "tcp"
-    private_port = 22
-    public_port = 22
+    private_port = 80
+    public_port = 80
+    virtual_machine = "${cloudstack_instance.wordpress01.id}"
+  }
+  forward {
+    protocol = "tcp"
+    private_port = 443
+    public_port = 443
     virtual_machine = "${cloudstack_instance.wordpress01.id}"
   }
 }

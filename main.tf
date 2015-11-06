@@ -17,13 +17,41 @@ resource "cloudstack_network_acl_rule" "acl_web_tier" {
   rule {
     action = "allow"
     source_cidr = "0.0.0.0/0"
-    protocol = "all"
+    protocol = "tcp"
+    ports = [ "53", "80", "123", "443" ]
     traffic_type = "egress"
   }
   rule {
     action = "allow"
     source_cidr = "0.0.0.0/0"
-    protocol = "all"
+    protocol = "udp"
+    ports = [ "53", "123" ]
+    traffic_type = "egress"
+  }
+  rule {
+    action = "allow"
+    source_cidr = "${cloudstack_instance.mysql01.ipaddress}/32"
+    protocol = "tcp"
+    ports = [ "3306" ]
+    traffic_type = "egress"
+  }
+  rule {
+    action = "allow"
+    source_cidr = "0.0.0.0/0"
+    protocol = "icmp"
+    traffic_type = "egress"
+  }
+  rule {
+    action = "allow"
+    source_cidr = "0.0.0.0/0"
+    protocol = "tcp"
+    ports = [ "80", "443" ]
+    traffic_type = "ingress"
+  }
+  rule {
+    action = "allow"
+    source_cidr = "0.0.0.0/0"
+    protocol = "icmp"
     traffic_type = "ingress"
   }
 }
@@ -36,17 +64,37 @@ resource "cloudstack_network_acl" "acl_db" {
 resource "cloudstack_network_acl_rule" "acl_db_tier" {
   aclid = "${cloudstack_network_acl.acl_db.id}"
 
-
   rule {
     action = "allow"
     source_cidr = "0.0.0.0/0"
-    protocol = "all"
+    protocol = "tcp"
+    ports = [ "53", "80", "123", "443" ]
     traffic_type = "egress"
   }
   rule {
     action = "allow"
     source_cidr = "0.0.0.0/0"
-    protocol = "all"
+    protocol = "udp"
+    ports = [ "53", "123" ]
+    traffic_type = "egress"
+  }
+  rule {
+    action = "allow"
+    source_cidr = "${cloudstack_instance.wordpress01.ipaddress}/32"
+    protocol = "tcp"
+    ports = [ "3306" ]
+    traffic_type = "ingress"
+  }
+  rule {
+    action = "allow"
+    source_cidr = "0.0.0.0/0"
+    protocol = "icmp"
+    traffic_type = "egress"
+  }
+  rule {
+    action = "allow"
+    source_cidr = "0.0.0.0/0"
+    protocol = "icmp"
     traffic_type = "ingress"
   }
 }

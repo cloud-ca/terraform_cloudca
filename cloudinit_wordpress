@@ -1,4 +1,18 @@
 #cloud-config
 
-ssh_authorized_keys:
-    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPn/jt5vTyRNpvpg/Eze+HOuOBXh1ygpqfadpUgcHfNMLslU+Tvr4WFvx/mCmMxJ6HyFCyGZ8gSsbKgRYAi8x/DD1/VI7Zj/c1b9oYhwL/zucQwCDubiKxtS1JEqOcF19tYeuJtYl/HcsdtnQ3cdu4wtTM6ZNowvM27G7PKvX1o0D/M1jfIh1Cibc8oxmoDl0Il+MUm9s6JtxDLnhI7SDwXtBPWe6zqORw9BCCDIHhaIzI6qITpdf4hhc3fhMN6bWh/ExuFbNRMNK4e3SZMN9sSgEGPvYvbUb2/Z09bTk7R9HCEz9u637p7aB6UHlJyOJWOZT7pXpLOjWi89vGUOn/ vilisseranen@pegasus
+coreos:
+  units:
+    - name: "docker-wordpress.service"
+      command: "start"
+      content: |
+        [Unit]
+          Description=Wordpress
+          After=docker.service
+          Requires=docker.service
+
+          [Service]
+          TimeoutStartSec=0
+          ExecStartPre=-/usr/bin/docker kill wordpress
+          ExecStartPre=-/usr/bin/docker rm wordpress
+          ExecStartPre=/usr/bin/docker pull wordpress
+          ExecStart=/usr/bin/docker run --name wordpress01 -p 80:80 -p 443:443 -e WORDPRESS_DB_HOST=10.10.2.10 -e WORDPRESS_DB_USER=wordpress -e WORDPRESS_DB_PASSWORD=myWordpressPassword wordpress
